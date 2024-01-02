@@ -143,7 +143,7 @@ def follow(username):
             return redirect(url_for(user, username=username))
         current_user.follow(user)
         db.session.commit()
-        flash(f"You are not following {username}")
+        flash(f"You are now following {username}")
         return redirect(url_for("user", username=username))
     else:
         return redirect(url_for("home"))
@@ -183,3 +183,8 @@ def explore():
     return render_template(
         "index.html", title="Explore", posts=posts, next_url=next_url, prev_url=prev_url
     )
+
+
+@app.route("/reset_password_request")
+def reset_password_request():
+    return render_template("500.html")
