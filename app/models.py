@@ -62,18 +62,21 @@ class User(UserMixin, db.Model):
         query = self.following.select().where(User.id == user.id)
         return db.session.scalar(query) is not None
 
+    @property
     def followers_count(self):
         query = sa.select(sa.func.count()).select_from(
             self.followers.select().subquery()
         )
         return db.session.scalar(query)
 
+    @property
     def following_count(self):
         query = sa.select(sa.func.count()).select_from(
             self.following.select().subquery()
         )
         return db.session.scalar(query)
 
+    @property
     def following_posts(self):
         Author = so.aliased(User)
         Follower = so.aliased(User)
