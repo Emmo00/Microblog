@@ -7,8 +7,8 @@ from flask_login import login_required
 import sqlalchemy as sa
 
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, EditProfileForm, EmptyForm
-from app.models import User
+from app.forms import LoginForm, RegistrationForm, EditProfileForm, EmptyForm, PostForm
+from app.models import User, Post
 
 
 @app.before_request
@@ -18,11 +18,19 @@ def before_request():
         db.session.commit()
 
 
-@app.route("/")
-@app.route("/home")
+@app.route("/", methods=["GET", "POST"])
+@app.route("/home", methods=["GET", "POST"])
 @login_required
 def home():
-    return render_template("index.html")
+    form = PostForm()
+    if form.validate_on_submit():
+        post = Post(body=form.post.data, author=current_user)
+        print(form.post.data)
+        db.session.add(post)
+        db.session.commit()
+        flash("Your post is not live!")
+        return redirect(url_for("home"))
+    return render_template("index.html", title="Home Page", form=form)
 
 
 @app.route("/login", methods=["GET", "POST"])
