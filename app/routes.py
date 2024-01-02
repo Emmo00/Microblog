@@ -30,7 +30,8 @@ def home():
         db.session.commit()
         flash("Your post is not live!")
         return redirect(url_for("home"))
-    return render_template("index.html", title="Home Page", form=form)
+    posts = db.session.scalars(current_user.following_posts).all()
+    return render_template("index.html", title="Home Page", form=form, posts=posts)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -80,10 +81,7 @@ def register():
 def user(username):
     form = EmptyForm()
     user = db.first_or_404(sa.select(User).where(User.username == username))
-    posts = [
-        {"author": user, "body": "Test post"},
-        {"author": user, "body": "Hello world"},
-    ]
+    posts = db.session.scalars(user.posts.select()).all()
     return render_template("user.html", user=user, posts=posts, form=form)
 
 
